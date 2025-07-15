@@ -12,9 +12,43 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                    @if(auth()->user()->isAdmin())
+                        <x-nav-link href="{{ route('admin.users.index') }}" :active="request()->routeIs('admin.users.*')">
+                            {{ __('Users') }}
+                        </x-nav-link>
+                        <x-nav-link href="{{ route('admin.patients.index') }}" :active="request()->routeIs('admin.patients.*')">
+                            {{ __('Patients') }}
+                        </x-nav-link>
+                        <x-nav-link href="{{ route('admin.doctors.index') }}" :active="request()->routeIs('admin.doctors.*')">
+                            {{ __('Doctors') }}
+                        </x-nav-link>
+                        <x-nav-link href="{{ route('admin.obats.index') }}" :active="request()->routeIs('admin.obats.*')">
+                            {{ __('Medicines') }}
+                        </x-nav-link>
+                        <x-nav-link href="{{ route('admin.visits.index') }}" :active="request()->routeIs('admin.visits.*')">
+                            {{ __('Visits') }}
+                        </x-nav-link>
+                    @elseif(auth()->user()->isDokter())
+                        <x-nav-link href="{{ route('doctor.schedules.index') }}" :active="request()->routeIs('doctor.schedules.*')">
+                            {{ __('My Schedules') }}
+                        </x-nav-link>
+                        <x-nav-link href="{{ route('doctor.visits.index') }}" :active="request()->routeIs('doctor.visits.*')">
+                            {{ __('Patient Visits') }}
+                        </x-nav-link>
+                        <x-nav-link href="{{ route('doctor.patients.index') }}" :active="request()->routeIs('doctor.patients.*')">
+                            {{ __('My Patients') }}
+                        </x-nav-link>
+                    @elseif(auth()->user()->isPasien())
+                        <x-nav-link href="{{ route('patient.profile') }}" :active="request()->routeIs('patient.profile')">
+                            {{ __('My Profile') }}
+                        </x-nav-link>
+                        <x-nav-link href="{{ route('patient.visits.index') }}" :active="request()->routeIs('patient.visits.*')">
+                            {{ __('My Visits') }}
+                        </x-nav-link>
+                        <x-nav-link href="{{ route('patient.schedules.available') }}" :active="request()->routeIs('patient.schedules.*')">
+                            {{ __('Doctor Schedules') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -139,9 +173,7 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+            <!-- Dashboard link removed -->
         </div>
 
         <!-- Responsive Settings Options -->
