@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\ScheduleController;
@@ -24,6 +25,9 @@ Route::middleware([
     // General Dashboard (redirect based on role)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
+    // Override Jetstream profile route with role-based redirect
+    Route::get('/user/profile', [ProfileController::class, 'show'])->name('profile.show');
+    
     // Routes that require authentication but not specific role
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Available slots endpoint (can be used by any logged in user)
@@ -36,6 +40,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 // Admin Routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        
+        // Admin Profile
+        Route::get('/profile', [AdminController::class, 'profile'])->name('profile');
+        Route::put('/profile', [AdminController::class, 'updateProfile'])->name('profile.update');
         
         // User Management
         Route::get('/users', [AdminController::class, 'users'])->name('users.index');
@@ -82,6 +90,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::middleware(['role:dokter'])->prefix('doctor')->name('doctor.')->group(function () {
         Route::get('/dashboard', [DoctorController::class, 'dashboard'])->name('dashboard');
         
+        // Doctor Profile
+        Route::get('/profile', [DoctorController::class, 'profile'])->name('profile');
+        Route::put('/profile', [DoctorController::class, 'updateProfile'])->name('profile.update');
+        
         // Doctor Schedule Management
         Route::get('/schedules', [DoctorController::class, 'schedules'])->name('schedules.index');
         Route::get('/schedules/create', [DoctorController::class, 'createSchedule'])->name('schedules.create');
@@ -105,10 +117,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Patient Routes
     Route::middleware(['role:pasien'])->prefix('patient')->name('patient.')->group(function () {
         Route::get('/dashboard', [PatientController::class, 'dashboard'])->name('dashboard');
-        
-        // Profile Management
-        Route::get('/profile', [PatientController::class, 'profile'])->name('profile');
-        Route::put('/profile', [PatientController::class, 'updateProfile'])->name('profile.update');
         
         // Visit Requests
         Route::get('/visits', [VisitController::class, 'patientIndex'])->name('visits.index');

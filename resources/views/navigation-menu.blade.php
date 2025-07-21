@@ -39,9 +39,6 @@
                             {{ __('My Patients') }}
                         </x-nav-link>
                     @elseif(auth()->user()->isPasien())
-                        <x-nav-link href="{{ route('patient.profile') }}" :active="request()->routeIs('patient.profile')">
-                            {{ __('My Profile') }}
-                        </x-nav-link>
                         <x-nav-link href="{{ route('patient.visits.index') }}" :active="request()->routeIs('patient.visits.*')">
                             {{ __('My Visits') }}
                         </x-nav-link>
