@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class DoctorController extends Controller
 {
@@ -210,5 +211,49 @@ class DoctorController extends Controller
     {
         $doctor->user->delete(); // This will cascade delete doctor
         return redirect()->route('admin.doctors.index')->with('success', 'Dokter berhasil dihapus.');
+    }
+
+    // Doctor Profile Management
+    public function profile()
+    {
+        $user = Auth::user();
+        $doctor = $user->doctor;
+        
+        if (!$doctor) {
+            return redirect()->route('login')->with('error', 'Doctor profile not found.');
+        }
+        
+        return view('doctor.profile', compact('user', 'doctor'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . Auth::id(),
+            'nama_lengkap' => 'required|string|max:255',
+            'spesialis' => 'required|string|max:255',
+            'alamat_praktik' => 'nullable|string',
+            'no_telepon' => 'nullable|string|max:20',
+        ]);
+
+        $user = Auth::user();
+        $doctor = $user->doctor;
+
+        // Update user data
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+        ]);
+
+        // Update doctor data
+        $doctor->update([
+            'nama_lengkap' => $request->nama_lengkap,
+            'spesialis' => $request->spesialis,
+            'alamat_praktik' => $request->alamat_praktik,
+            'no_telepon' => $request->no_telepon,
+        ]);
+
+        return redirect()->route('doctor.profile')->with('success', 'Profile berhasil diupdate.');
     }
 }
