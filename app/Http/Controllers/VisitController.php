@@ -59,7 +59,7 @@ class VisitController extends Controller
     public function patientIndex()
     {
         $patient = Auth::user()->patient;
-        
+
         if (!$patient) {
             return redirect()->route('patient.profile')->with('info', 'Lengkapi data profil terlebih dahulu.');
         }
@@ -87,7 +87,7 @@ class VisitController extends Controller
     public function create(Request $request)
     {
         $patient = Auth::user()->patient;
-        
+
         if (!$patient) {
             return redirect()->route('patient.profile')->with('info', 'Lengkapi data profil terlebih dahulu.');
         }
@@ -122,7 +122,7 @@ class VisitController extends Controller
         ]);
 
         $patient = Auth::user()->patient;
-        
+
         // Check if doctor is available at requested time
         $schedule = DoctorSchedule::where('doctor_id', $request->doctor_id)
             ->where('tanggal', $request->tanggal_kunjungan)
@@ -154,6 +154,7 @@ class VisitController extends Controller
             'riwayat_penyakit_kunjungan' => $request->riwayat_penyakit_kunjungan,
             'catatan' => $request->catatan,
             'status' => 'menunggu',
+            'biaya_konsultasi' => 50000, // Tambahkan baris ini
         ]);
 
         return redirect()->route('patient.visits.index')->with('success', 'Permintaan kunjungan berhasil diajukan.');
@@ -162,7 +163,7 @@ class VisitController extends Controller
     public function show(Visit $visit)
     {
         $visit->load(['patient.user', 'doctor.user', 'obats', 'obatVisits.obat']);
-        
+
         // Check authorization
         $user = Auth::user();
         if ($user->role === 'pasien' && $visit->patient->user_id !== $user->id) {
@@ -190,7 +191,7 @@ class VisitController extends Controller
         if ($user->role === 'dokter') {
             $obats = Obat::where('stok', '>', 0)->orderBy('nama_obat')->get();
             $medicines = $obats; // Alias for compatibility
-            
+
             // Get next appointment for this patient with this doctor
             $nextAppointment = Visit::where('patient_id', $visit->patient_id)
                 ->where('doctor_id', $visit->doctor_id)
@@ -198,7 +199,7 @@ class VisitController extends Controller
                 ->where('status', '!=', 'dibatalkan')
                 ->orderBy('tanggal_kunjungan')
                 ->first();
-            
+
             return view('doctor.visits.show', compact('visit', 'obats', 'medicines', 'patientHistory', 'nextAppointment'));
         }
 
@@ -273,7 +274,7 @@ class VisitController extends Controller
                 // Add new medicines
                 foreach ($request->obats as $obatData) {
                     $obat = Obat::find($obatData['id']);
-                    
+
                     // Check stock availability
                     if ($obat->stok < $obatData['jumlah']) {
                         throw new \Exception("Stok {$obat->nama_obat} tidak mencukupi. Stok tersedia: {$obat->stok}");
@@ -323,7 +324,7 @@ class VisitController extends Controller
 
         $visit->update($request->only([
             'patient_id',
-            'doctor_id', 
+            'doctor_id',
             'tanggal_kunjungan',
             'jam_kunjungan',
             'keluhan_utama',
@@ -346,7 +347,7 @@ class VisitController extends Controller
         $patients = Patient::with('user')->get();
         $doctors = Doctor::with('user')->get();
         $selectedPatientId = $request->get('patient_id');
-        
+
         return view('admin.visits.create', compact('patients', 'doctors', 'selectedPatientId'));
     }
 
@@ -404,7 +405,7 @@ class VisitController extends Controller
 
         while ($startTime < $endTime) {
             $timeSlot = $startTime->format('H:i');
-            
+
             // Check if this slot is not already booked
             if (!in_array($timeSlot, $existingVisits)) {
                 $slots[] = [
@@ -413,7 +414,7 @@ class VisitController extends Controller
                     'available' => true
                 ];
             }
-            
+
             $startTime->addMinutes(30);
         }
 
@@ -427,7 +428,7 @@ class VisitController extends Controller
         ]);
 
         $user = Auth::user();
-        
+
         // Check authorization
         if ($user->role === 'admin') {
             // Admin can update any visit status
@@ -456,7 +457,7 @@ class VisitController extends Controller
     public function cancel(Request $request, Visit $visit)
     {
         $user = Auth::user();
-        
+
         // Only patients can cancel their own visits and only if status is 'menunggu'
         if ($user->role !== 'pasien' || $visit->patient->user_id !== $user->id) {
             abort(403, 'Unauthorized to cancel this visit');
@@ -519,7 +520,7 @@ class VisitController extends Controller
                 foreach ($request->medicines as $medicineData) {
                     if (!empty($medicineData['obat_id'])) {
                         $obat = Obat::find($medicineData['obat_id']);
-                        
+
                         // Check stock availability
                         if ($obat->stok < $medicineData['jumlah']) {
                             throw new \Exception("Stok {$obat->nama_obat} tidak mencukupi. Stok tersedia: {$obat->stok}");
@@ -552,7 +553,6 @@ class VisitController extends Controller
 
             return redirect()->route('doctor.visits.show', $visit)
                 ->with('success', 'Diagnosis dan resep berhasil disimpan');
-
         } catch (\Exception $e) {
             DB::rollback();
             return back()->withErrors(['error' => $e->getMessage()])->withInput();
