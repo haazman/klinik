@@ -44,6 +44,66 @@ class PatientController extends Controller
         return view('patient.dashboard', compact('stats', 'recentVisits', 'patient', 'isProfileIncomplete'));
     }
 
+    // Patient Profile Management
+    public function profile()
+    {
+        $patient = Auth::user()->patient;
+        
+        // Create patient record if it doesn't exist
+        if (!$patient) {
+            $patient = Patient::create([
+                'user_id' => Auth::id(),
+                'nama_lengkap' => Auth::user()->name,
+                'alamat' => '',
+                'no_telepon' => '',
+            ]);
+        }
+
+        return view('patient.profile', compact('patient'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'nama_lengkap' => 'required|string|max:255',
+            'nik' => 'nullable|string|max:16',
+            'alamat' => 'required|string',
+            'no_telepon' => 'required|string|max:20',
+            'tanggal_lahir' => 'nullable|date',
+            'jenis_kelamin' => 'nullable|in:L,P',
+            'golongan_darah' => 'nullable|in:A,B,AB,O',
+            'status_pernikahan' => 'nullable|in:belum_menikah,menikah,cerai',
+            'pekerjaan' => 'nullable|string|max:255',
+            'riwayat_penyakit' => 'nullable|string',
+            'alergi' => 'nullable|string',
+        ]);
+
+        $patient = Auth::user()->patient;
+        
+        if (!$patient) {
+            $patient = Patient::create([
+                'user_id' => Auth::id(),
+                'nama_lengkap' => $request->nama_lengkap,
+                'alamat' => $request->alamat,
+                'no_telepon' => $request->no_telepon,
+            ]);
+        } else {
+            $patient->update($request->only([
+                'nama_lengkap', 'nik', 'alamat', 'no_telepon', 
+                'tanggal_lahir', 'jenis_kelamin', 'golongan_darah', 
+                'status_pernikahan', 'pekerjaan', 'riwayat_penyakit', 'alergi'
+            ]));
+        }
+
+        // Also update user name if changed
+        $user = Auth::user();
+        if ($user->name !== $request->nama_lengkap) {
+            User::where('id', $user->id)->update(['name' => $request->nama_lengkap]);
+        }
+
+        return redirect()->route('patient.profile')->with('success', 'Profil berhasil diperbarui.');
+    }
+
     // For Doctor to view patients
     public function doctorIndex()
     {

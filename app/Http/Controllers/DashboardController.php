@@ -18,7 +18,7 @@ class DashboardController extends Controller
             case 'dokter':
                 return redirect()->route('doctor.dashboard');
             case 'pasien':
-                return redirect()->route('patient.dashboard');
+                return redirect()->route('patient.visits.index');
             default:
                 return redirect()->route('login');
         }

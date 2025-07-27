@@ -1,25 +1,27 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profil Pasien') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                <div class="p-6">
-                    @if(session('success'))
-                        <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
-                            {{ session('success') }}
-                        </div>
-                    @endif
+@section('title', 'Profil Pasien')
 
-                    @if(session('info'))
-                        <div class="mb-6 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded">
-                            {{ session('info') }}
-                        </div>
-                    @endif
+@section('content')
+    <div class="container mx-auto px-4 py-6">
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Profil Pasien</h1>
+            <p class="text-gray-600 mt-1">Kelola informasi profil dan data pribadi Anda</p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6">
+                @if(session('success'))
+                    <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if(session('info'))
+                    <div class="mb-6 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded">
+                        {{ session('info') }}
+                    </div>
+                @endif
 
                     <form method="POST" action="{{ route('patient.profile.update') }}">
                         @csrf
@@ -209,4 +211,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection
