@@ -114,9 +114,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/patients/{patient}', [PatientController::class, 'doctorShow'])->name('patients.show');
     });
     
-    // Patient Routes
+    // Patient Routes - DIPERBAIKI ROUTING
     Route::middleware(['role:pasien'])->prefix('patient')->name('patient.')->group(function () {
         Route::get('/dashboard', [PatientController::class, 'dashboard'])->name('dashboard');
+        
+        // Profile Management - PERBAIKAN: Menambahkan route untuk update dengan method PUT
+        Route::get('/profile', [PatientController::class, 'profile'])->name('profile');
+        Route::put('/profile', [PatientController::class, 'updateProfile'])->name('profile.update');
         
         // Visit Requests
         Route::get('/visits', [VisitController::class, 'patientIndex'])->name('visits.index');
