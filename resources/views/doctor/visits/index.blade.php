@@ -290,7 +290,7 @@
 
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = `/doctor/visits/${visitToUpdate}/update-status`;
+            form.action = `/doctor/visits/${visitToUpdate}/status`;
 
             const csrfToken = document.createElement('input');
             csrfToken.type = 'hidden';
@@ -301,7 +301,7 @@
             const methodInput = document.createElement('input');
             methodInput.type = 'hidden';
             methodInput.name = '_method';
-            methodInput.value = 'PATCH';
+            methodInput.value = 'PUT';
             form.appendChild(methodInput);
 
             const statusInput = document.createElement('input');

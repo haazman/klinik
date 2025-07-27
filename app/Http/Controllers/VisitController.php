@@ -12,6 +12,7 @@ use App\Models\ObatMasuk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class VisitController extends Controller
 {
@@ -423,35 +424,53 @@ class VisitController extends Controller
 
     public function updateStatus(Request $request, Visit $visit)
     {
-        $request->validate([
-            'status' => 'required|in:menunggu,sedang_diperiksa,selesai,dibatalkan'
-        ]);
+        try {
+            $request->validate([
+                'status' => 'required|in:menunggu,sedang_diperiksa,selesai,dibatalkan'
+            ]);
 
-        $user = Auth::user();
+            $user = Auth::user();
 
-        // Check authorization
-        if ($user->role === 'admin') {
-            // Admin can update any visit status
-        } elseif ($user->role === 'dokter' && $visit->doctor->user_id === $user->id) {
-            // Doctor can update visits assigned to them
-        } else {
-            abort(403, 'Unauthorized to update this visit status');
-        }
+            // Check authorization
+            if ($user->role === 'admin') {
+                // Admin can update any visit status
+            } elseif ($user->role === 'dokter' && $visit->doctor_id === $user->doctor->id) {
+                // Doctor can update visits assigned to them
+            } else {
+                Log::warning('Unauthorized visit status update attempt', [
+                    'user_id' => $user->id,
+                    'user_role' => $user->role,
+                    'visit_id' => $visit->id,
+                    'visit_doctor_id' => $visit->doctor_id,
+                    'user_doctor_id' => $user->doctor->id ?? null
+                ]);
+                abort(403, 'Unauthorized to update this visit status');
+            }
 
-        $visit->update([
-            'status' => $request->status
-        ]);
-
-        $message = 'Status kunjungan berhasil diperbarui menjadi ' . ucfirst(str_replace('_', ' ', $request->status));
-
-        if ($request->expectsJson()) {
-            return response()->json([
-                'message' => $message,
+            $visit->update([
                 'status' => $request->status
             ]);
-        }
 
-        return back()->with('success', $message);
+            $message = 'Status kunjungan berhasil diperbarui menjadi ' . ucfirst(str_replace('_', ' ', $request->status));
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $message,
+                    'status' => $request->status
+                ]);
+            }
+
+            return back()->with('success', $message);
+        } catch (\Exception $e) {
+            Log::error('Error updating visit status', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+                'visit_id' => $visit->id,
+                'status' => $request->status ?? null
+            ]);
+            
+            return back()->with('error', 'Terjadi kesalahan saat mengupdate status kunjungan: ' . $e->getMessage());
+        }
     }
 
     public function cancel(Request $request, Visit $visit)

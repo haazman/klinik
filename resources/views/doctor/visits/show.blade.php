@@ -472,7 +472,7 @@ function updateStatus(status) {
     const methodInput = document.createElement('input');
     methodInput.type = 'hidden';
     methodInput.name = '_method';
-    methodInput.value = 'PATCH';
+    methodInput.value = 'PUT';
     form.appendChild(methodInput);
     
     const statusInput = document.createElement('input');

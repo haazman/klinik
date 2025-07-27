@@ -200,8 +200,6 @@
                                         @csrf
                                         @method('PUT')
                                         <input type="hidden" name="status" value="dibatalkan">
-                                        @method('PATCH')
-                                        <input type="hidden" name="status" value="dibatalkan">
                                         <button type="submit" class="text-red-600 hover:text-red-900 p-1 rounded" title="Batalkan">
                                             <i class="fas fa-times"></i>
                                         </button>

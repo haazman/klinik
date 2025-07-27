@@ -363,7 +363,7 @@ function confirmStatusUpdate() {
     
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = '{{ route("admin.visits.update-status", $visit) }}';
+    form.action = '{{ route("admin.visits.updateStatus", $visit) }}';
     
     const csrfToken = document.createElement('input');
     csrfToken.type = 'hidden';
@@ -374,7 +374,7 @@ function confirmStatusUpdate() {
     const methodInput = document.createElement('input');
     methodInput.type = 'hidden';
     methodInput.name = '_method';
-    methodInput.value = 'PATCH';
+    methodInput.value = 'PUT';
     form.appendChild(methodInput);
     
     const statusInput = document.createElement('input');
