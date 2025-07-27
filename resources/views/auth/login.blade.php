@@ -221,15 +221,15 @@
                         <div class="grid grid-cols-1 gap-2 text-xs">
                             <div class="bg-blue-50 p-3 rounded-lg">
                                 <strong class="text-blue-800">Admin:</strong> 
-                                <span class="text-blue-600">admin@klinik.com / admin123</span>
+                                <span class="text-blue-600">admin@klinik.com / password</span>
                             </div>
                             <div class="bg-green-50 p-3 rounded-lg">
                                 <strong class="text-green-800">Dokter:</strong> 
-                                <span class="text-green-600">doctor@klinik.com / doctor123</span>
+                                <span class="text-green-600">doctor@klinik.com / password</span>
                             </div>
                             <div class="bg-purple-50 p-3 rounded-lg">
                                 <strong class="text-purple-800">Pasien:</strong> 
-                                <span class="text-purple-600">patient@klinik.com / patient123</span>
+                                <span class="text-purple-600">patient@klinik.com / password</span>
                             </div>
                         </div>
                     </div>
