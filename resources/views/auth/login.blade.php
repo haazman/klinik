@@ -273,15 +273,15 @@
             switch(role) {
                 case 'admin':
                     emailField.value = 'admin@klinik.com';
-                    passwordField.value = 'admin123';
+                    passwordField.value = 'password';
                     break;
                 case 'doctor':
                     emailField.value = 'doctor@klinik.com';
-                    passwordField.value = 'doctor123';
+                    passwordField.value = 'password';
                     break;
                 case 'patient':
                     emailField.value = 'patient@klinik.com';
-                    passwordField.value = 'patient123';
+                    passwordField.value = 'password';
                     break;
             }
         }
